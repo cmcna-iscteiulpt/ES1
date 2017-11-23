@@ -1,6 +1,6 @@
 IC1
 
-Identificação do grupo (ex: Grupo 2)
+Grupo 61
 
 Identificação do número, nome e papel de cada membro do grupo (ex: 12345, José Silva, Scrum Master)
 
