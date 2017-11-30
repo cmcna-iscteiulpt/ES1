@@ -14,6 +14,7 @@ public class AntiSpamFilterProblem extends AbstractDoubleProblem {
 	  }
 
 	  public AntiSpamFilterProblem(Integer numberOfVariables) {
+		  // numero regras
 	    setNumberOfVariables(numberOfVariables);
 	    setNumberOfObjectives(2);
 	    setName("AntiSpamFilterProblem");
