@@ -10,7 +10,7 @@ public class AntiSpamFilterProblem extends AbstractDoubleProblem {
 
 	public AntiSpamFilterProblem() {
 	    // 10 variables (anti-spam filter rules) by default 
-		  //temos 335 regras no rules.cf
+		  //temos 335 regras no rules.cf **dinamizar
 	    this(335);
 	  }
 
