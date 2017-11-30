@@ -15,7 +15,6 @@ public class AntiSpamFilterProblem extends AbstractDoubleProblem {
 	  }
 
 	  public AntiSpamFilterProblem(Integer numberOfVariables) {
-		  // numero regras
 	    setNumberOfVariables(numberOfVariables);
 	    setNumberOfObjectives(2);
 	    setName("AntiSpamFilterProblem");
@@ -33,24 +32,27 @@ public class AntiSpamFilterProblem extends AbstractDoubleProblem {
 	  }
 
 	  public void evaluate(DoubleSolution solution){
-	    double aux, xi, xj;
-	    double[] fx = new double[getNumberOfObjectives()];
+		  // vetor de pesos_solution
 	    double[] x = new double[getNumberOfVariables()];
 	    for (int i = 0; i < solution.getNumberOfVariables(); i++) {
 	      x[i] = solution.getVariableValue(i) ;
 	    }
 
-	    fx[0] = 0.0;
+	    double FP = 0.0;
+	    //com base nos pesos ir ao spam.log e ham.log calcular o FP e FN
+	    //fazer um metodo para calcular o numero de FP e FN
+	    //passar rules.cf para um vetor e depois invovar esse vetor no calculo dos FP e FN
 	    for (int var = 0; var < solution.getNumberOfVariables() - 1; var++) {
-		  fx[0] += Math.abs(x[0]); // Example for testing
+		  FP += Math.abs(x[0]); // Example for testing
 	    }
 	    
-	    fx[1] = 0.0;
+	    double FN = 0.0;
 	    for (int var = 0; var < solution.getNumberOfVariables(); var++) {
-	    	fx[1] += Math.abs(x[1]); // Example for testing
+	    	FN += Math.abs(x[1]); // Example for testing
 	    }
 
-	    solution.setObjective(0, fx[0]);
-	    solution.setObjective(1, fx[1]);
+	    //quantidade de criterios de avaliacao
+	    solution.setObjective(0, FP);
+	    solution.setObjective(1, FN);
 	  }
 	}
