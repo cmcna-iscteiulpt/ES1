@@ -34,7 +34,7 @@ public class AntiSpamFilterProblem extends AbstractDoubleProblem {
 	  public void evaluate(DoubleSolution solution){
 		  // vetor de pesos_solution
 	    double[] x = new double[getNumberOfVariables()];
-	    for (int i = 0; i < solution.getNumberOfVariables(); i++) {
+	    for (int i = 0; i < solution.getNumberOfVariables(); i++) { 
 	      x[i] = solution.getVariableValue(i) ;
 	    }
 
