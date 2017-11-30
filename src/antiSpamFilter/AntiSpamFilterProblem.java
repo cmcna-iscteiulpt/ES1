@@ -8,9 +8,10 @@ import org.uma.jmetal.solution.DoubleSolution;
 
 public class AntiSpamFilterProblem extends AbstractDoubleProblem {
 
-	  public AntiSpamFilterProblem() {
+	public AntiSpamFilterProblem() {
 	    // 10 variables (anti-spam filter rules) by default 
-	    this(10);
+		  //temos 335 regras no rules.cf
+	    this(335);
 	  }
 
 	  public AntiSpamFilterProblem(Integer numberOfVariables) {
