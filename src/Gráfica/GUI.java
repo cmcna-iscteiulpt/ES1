@@ -8,11 +8,7 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Vector;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -20,7 +16,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
 
@@ -172,12 +167,15 @@ public class GUI {
 	}
 
 	private JTable genTableAuto() {
-		String[] nomeColunas = { "Regra", "Peso" };
-		Object data[][] = { { "Regra1", "Peso1" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" },
-				{ "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" },
-				{ "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" },
-				{ "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra7", "Peso3" } };
-		JTable local = new JTable(data, nomeColunas);
+//		String[] nomeColunas = { "Regra", "Peso" };
+//		Object data[][] = { { "Regra1", "Peso1" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" },
+//				{ "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" },
+//				{ "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" },
+//				{ "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra7", "Peso3" } };
+//		JTable local = new JTable(data, nomeColunas);
+//		local.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+//		return local;
+		JTable local = new JTable(model);
 		local.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		return local;
 	}
