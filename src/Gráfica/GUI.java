@@ -10,6 +10,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -183,7 +185,7 @@ public class GUI {
 	public void read_Rules() {
 		File file = new File(text_caminho_r.getText());
 
-		if (file.isFile() && file.getName().endsWith(".txt")) {
+		if (file.isFile() && file.getName().endsWith(".cf")) {
 
 			try {
 				FileInputStream fstream = new FileInputStream(file);
@@ -192,18 +194,19 @@ public class GUI {
 				try (DataInputStream in = new DataInputStream(fstream)) {
 					BufferedReader br = new BufferedReader(new InputStreamReader(in));
 					String strLine;
-
+					String[] regra=new String[2];
 					// Read File Line By Line
 					// Object[][] Table=null;
 					int i = 0;
 					while ((strLine = br.readLine()) != null) {
-						//data[i][0]=strLine;
-						model.setValueAt((String) strLine, i, 0);;
+						regra[0]=strLine;
 						i++;
 
 						// Print the content on the console
 						// System.out.println (strLine);
+						model.addRow(regra);
 					}
+					
 				}
 
 			} catch (Exception e) {// Catch exception if any
