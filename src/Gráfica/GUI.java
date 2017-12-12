@@ -2,6 +2,14 @@ package Gráfica;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.InputStreamReader;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -12,6 +20,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.WindowConstants;
+import javax.swing.table.DefaultTableModel;
 
 public class GUI {
 
@@ -22,6 +31,9 @@ public class GUI {
 	private JTextField text_caminho_r = new JTextField();
 	private JTextField text_caminho_h = new JTextField();
 	private JTextField text_caminho_s = new JTextField();
+	String[] cols = { "Regra", "Peso" };
+	String[][] data = {};
+	DefaultTableModel model = new DefaultTableModel(data, cols);
 
 	public GUI() {
 		frame = new JFrame("Projeto_ES1 - Grupo 61");
@@ -53,6 +65,7 @@ public class GUI {
 		JLabel rules = new JLabel("rules.cf");
 		JLabel ham = new JLabel("ham.log");
 		JLabel spam = new JLabel("spam.log");
+		JButton carregar = new JButton("Carregar ficheiros");
 
 		// mini paineis para cada label + caminho (vazio)
 		// linha do rules.cf
@@ -68,13 +81,21 @@ public class GUI {
 		JPanel panelS = new JPanel(new GridLayout(1, 2));
 		panelS.add(spam);
 		panelS.add(text_caminho_s);
-
+		// Butão para carregar os ficheiros
+		carregar.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				read_Rules();
+			}
+		});
 		// criar painelLocal a ser devolvido com 2 colunas e 3 linhas
 		JPanel local = new JPanel();
-		local.setLayout(new GridLayout(3, 1));
+		local.setLayout(new GridLayout(4, 1));
 		local.add(panelR);
 		local.add(panelH);
 		local.add(panelS);
+		local.add(carregar);
 
 		return local;
 	}
@@ -116,16 +137,17 @@ public class GUI {
 		 * directly accept data (SimpleTableDemo uses the first): JTable(Object[][]
 		 * rowData, Object[] columnNames) JTable(Vector rowData, Vector columnNames)
 		 */
-		String[] nomeColunas = { "Regra", "Peso" };
-		Object data[][] = { { "Regra1", "Peso1" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" },
-				{ "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" },
-				{ "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" },
-				{ "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra7", "Peso3" } };
-		JTable local = new JTable(data, nomeColunas);
+//		String[] nomeColunas = { "Regra", "Peso" };
+//		Object data[][] = { { "Regra1", "Peso1" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" },
+//				{ "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" },
+//				{ "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" },
+//				{ "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra7", "Peso3" } };
+		
+		JTable local = new JTable(model);
 		local.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		return local;
 	}
-	
+
 	private JPanel painelInferior() {
 		JPanel local = new JPanel(new GridLayout(1, 2));
 		JPanel panelLeft = new JPanel(new BorderLayout());
@@ -158,8 +180,40 @@ public class GUI {
 		return local;
 	}
 
+	public void read_Rules() {
+		File file = new File(text_caminho_r.getText());
+
+		if (file.isFile() && file.getName().endsWith(".txt")) {
+
+			try {
+				FileInputStream fstream = new FileInputStream(file);
+				System.out.println(file.getAbsolutePath());
+
+				try (DataInputStream in = new DataInputStream(fstream)) {
+					BufferedReader br = new BufferedReader(new InputStreamReader(in));
+					String strLine;
+
+					// Read File Line By Line
+					// Object[][] Table=null;
+					int i = 0;
+					while ((strLine = br.readLine()) != null) {
+						//data[i][0]=strLine;
+						model.setValueAt((String) strLine, i, 0);;
+						i++;
+
+						// Print the content on the console
+						// System.out.println (strLine);
+					}
+				}
+
+			} catch (Exception e) {// Catch exception if any
+				System.err.println("Error: " + e.getMessage());
+			}
+		}
+	}
+
 	public static void main(String[] args) {
-		//main
+		// main
 		new GUI();
 	}
 }
