@@ -23,24 +23,37 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
 
+/**
+ * 
+ * @author Rúben Beirão
+ * @author Tiago Santos
+ * @author Ben-Hur Fidalgo
+ * 
+ * @since 17-10-2017
+ */
+
 public class GUI {
 
-	private JFrame frame;
-	private JPanel panel_u;
-	private JPanel panel_m;
-	private JPanel panel_d;
-	private JTextField text_caminho_r = new JTextField();
-	private JTextField text_caminho_h = new JTextField();
-	private JTextField text_caminho_s = new JTextField();
-	String[] cols = { "Regra", "Peso" };
+	private JFrame frame = new JFrame("Projeto_ES1 - Grupo 61");;
+	private JPanel panelUp = new JPanel();
+	private JPanel panelMedium = new JPanel();
+	private JPanel panelDown = new JPanel();
+	private JTextField textPathRules = new JTextField();
+	private JTextField textPathHam = new JTextField();
+	private JTextField textPathSpam = new JTextField();
+	String[] colunas = { "Regra", "Peso" };
 	String[][] data = {};
-	DefaultTableModel modelME = new DefaultTableModel(data, cols);
-	DefaultTableModel modelIN = new DefaultTableModel(data, cols);
+	DefaultTableModel modelME = new DefaultTableModel(data, colunas);
+	DefaultTableModel modelIN = new DefaultTableModel(data, colunas);
 	ArrayList<String> regras = new ArrayList<String>();
-	ArrayList<String> ham = new ArrayList<String>();
-	ArrayList<String> spam = new ArrayList<String>();
+	ArrayList<String> hamMessages = new ArrayList<String>();
+	ArrayList<String> spamMessages = new ArrayList<String>();
+
+	/**
+	 * This method creates the GUI after running all methods
+	 */
+
 	public GUI() {
-		frame = new JFrame("Projeto_ES1 - Grupo 61");
 		frame.setLayout(new GridLayout(3, 1));
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		addFrameContent();
@@ -49,64 +62,77 @@ public class GUI {
 		frame.setVisible(true);
 	}
 
+	/**
+	 * This method adds all the contents that will appear in the frame
+	 */
+
 	private void addFrameContent() {
 		// gerar painel superior
-		panel_u = painelSuperior();
+		panelUp = painelSuperior();
 		// adicionar painel superior
-		frame.add(panel_u);
+		frame.add(panelUp);
 		// gerar painel mediano
-		panel_m = painelMed();
+		panelMedium = generatePainelMed();
 		// adicionar painel mediano
-		frame.add(panel_m);
+		frame.add(panelMedium);
 		// gerar painel inferior
-		panel_d = painelInferior();
+		panelDown = generatePainelInferior();
 		// adicionar painel inferior
-		frame.add(panel_d);
+		frame.add(panelDown);
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	private JPanel painelSuperior() {
 		// labels estaticas
-		JLabel rules = new JLabel("rules.cf");
-		JLabel ham = new JLabel("ham.log");
-		JLabel spam = new JLabel("spam.log");
-		JButton carregar = new JButton("Carregar ficheiros");
+		JLabel rules_path = new JLabel("rules.cf path");
+		JLabel ham_path = new JLabel("ham.log path");
+		JLabel spam_path = new JLabel("spam.log path");
+		JButton carregar_ficheiros = new JButton("Carregar ficheiros");
 
 		// mini paineis para cada label + caminho (vazio)
 		// linha do rules.cf
-		JPanel panelR = new JPanel(new GridLayout(1, 2));
-		panelR.add(rules);
+		JPanel panelRules = new JPanel(new GridLayout(1, 2));
+		panelRules.add(rules_path);
 
-		panelR.add(text_caminho_r);
+		panelRules.add(textPathRules);
 		// linha do ham.log
-		JPanel panelH = new JPanel(new GridLayout(1, 2));
-		panelH.add(ham);
-		panelH.add(text_caminho_h);
+		JPanel panelHam = new JPanel(new GridLayout(1, 2));
+		panelHam.add(ham_path);
+		panelHam.add(textPathHam);
 		// linha do spam.log
-		JPanel panelS = new JPanel(new GridLayout(1, 2));
-		panelS.add(spam);
-		panelS.add(text_caminho_s);
-		// Butão para carregar os ficheiros
-		carregar.addActionListener(new ActionListener() {
+		JPanel panelSpam = new JPanel(new GridLayout(1, 2));
+		panelSpam.add(spam_path);
+		panelSpam.add(textPathSpam);
+		// Botão para carregar os ficheiros
+		carregar_ficheiros.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				read_Rules();
-				read_Ham();
+				readRulesFile();
+				readHamFile();
 
 			}
 		});
 		// criar painelLocal a ser devolvido com 2 colunas e 3 linhas
 		JPanel local = new JPanel();
 		local.setLayout(new GridLayout(4, 1));
-		local.add(panelR);
-		local.add(panelH);
-		local.add(panelS);
-		local.add(carregar);
+		local.add(panelRules);
+		local.add(panelHam);
+		local.add(panelSpam);
+		local.add(carregar_ficheiros);
 
 		return local;
 	}
 
-	private JPanel painelMed() {
+	/**
+	 * 
+	 * @return
+	 */
+
+	private JPanel generatePainelMed() {
 
 		JPanel local = new JPanel(new GridLayout(1, 2));
 		JPanel panelLeft = new JPanel(new BorderLayout());
@@ -140,7 +166,7 @@ public class GUI {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				fpositive.setText("FP:"+calcular_FP());
+				fpositive.setText("FP:" + calcular_FP());
 			}
 		});
 		JButton button_save_config = new JButton("Guardar a configuração");
@@ -153,6 +179,10 @@ public class GUI {
 		local.add(panelRight);
 		return local;
 	}
+
+	/**
+	 * 
+	 */
 
 	private JTable genTableManual() {
 		/*
@@ -176,7 +206,12 @@ public class GUI {
 		return local;
 	}
 
-	private JPanel painelInferior() {
+	/**
+	 * 
+	 * @return
+	 */
+
+	private JPanel generatePainelInferior() {
 		JPanel local = new JPanel(new GridLayout(1, 2));
 		JPanel panelLeft = new JPanel(new BorderLayout());
 		JPanel panelRight = new JPanel(new GridLayout(3, 1));
@@ -197,6 +232,11 @@ public class GUI {
 		return local;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
+
 	private JTable genTableAuto() {
 		// String[] nomeColunas = { "Regra", "Peso" };
 		// Object data[][] = { { "Regra1", "Peso1" }, { "Regra3", "Peso3" }, { "Regra3",
@@ -215,8 +255,12 @@ public class GUI {
 		return local;
 	}
 
-	public void read_Rules() {
-		File file = new File(text_caminho_r.getText());
+	/**
+	 * 
+	 */
+
+	public void readRulesFile() {
+		File file = new File(textPathRules.getText());
 
 		if (file.isFile() && file.getName().endsWith(".cf")) {
 
@@ -243,8 +287,12 @@ public class GUI {
 		}
 	}
 
-	public void read_Ham() {
-		File file = new File(text_caminho_h.getText());
+	/**
+	 * 
+	 */
+
+	public void readHamFile() {
+		File file = new File(textPathHam.getText());
 		if (file.isFile() && file.getName().endsWith(".txt")) {
 			try {
 				FileInputStream fstream = new FileInputStream(file);
@@ -252,37 +300,42 @@ public class GUI {
 				try (DataInputStream in = new DataInputStream(fstream)) {
 					BufferedReader br = new BufferedReader(new InputStreamReader(in));
 					String strLine;
-					while((strLine = br.readLine())!= null) {
-						ham.add(strLine);
+					while ((strLine = br.readLine()) != null) {
+						hamMessages.add(strLine);
 					}
 				}
 			} catch (Exception e) {
 				System.err.println("Error: " + e.getMessage());
 			}
-			System.out.println(ham);
+			System.out.println(hamMessages);
 		}
 	}
-	
+
+	/**
+	 * 
+	 * @return
+	 */
+
 	public int calcular_FP() {
-		int FP=0;
-		double valor;
+		int FP = 0;
+		double valor = 0;
 		String[] linha;
-		for(int i=0;i<ham.size();i++) {
-			valor=0;
-			linha=ham.get(i).split(" ");
-			for(int j=1;j<linha.length;j++) {
-				for(int k=0;k<modelME.getRowCount();k++) {
-					if(modelME.getValueAt(k, 0).equals(linha[j])) {
-						valor += (double)modelME.getValueAt(k, 1);
+		for (int i = 0; i < hamMessages.size(); i++) {
+			valor = 0;
+			linha = hamMessages.get(i).split(" ");
+			for (int j = 1; j < linha.length; j++) {
+				for (int k = 0; k < modelME.getRowCount(); k++) {
+					if (modelME.getValueAt(k, 0).equals(linha[j])) {
+						valor += (double) modelME.getValueAt(k, 1);
 					}
 				}
 			}
-			if(valor>5) {
+			if (valor > 5) {
 				FP++;
 			}
 		}
 		return FP;
-		
+
 	}
 
 	public static void main(String[] args) {
