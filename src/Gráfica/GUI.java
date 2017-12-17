@@ -8,7 +8,10 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -33,14 +36,14 @@ import javax.swing.table.DefaultTableModel;
  */
 
 public class GUI {
-	//TEST
-	private JFrame frame = new JFrame("Projeto_ES1 - Grupo 61");;
+
+	private JFrame frame = new JFrame("Projeto_ES1 - Grupo 61");
 	private JPanel panelUp = new JPanel();
 	private JPanel panelMedium = new JPanel();
 	private JPanel panelDown = new JPanel();
-	private JTextField textPathRules = new JTextField();
-	private JTextField textPathHam = new JTextField();
-	private JTextField textPathSpam = new JTextField();
+	private JTextField textPathRules = new JTextField("C:\\Users\\Ben-Hur\\Dropbox\\ISCTE\\IGE\\3º ano\\ES\\Project\\rules.cf");
+	private JTextField textPathHam = new JTextField("C:\\Users\\Ben-Hur\\Dropbox\\ISCTE\\IGE\\3º ano\\ES\\Project\\ham.log");
+	private JTextField textPathSpam = new JTextField("C:\\Users\\Ben-Hur\\Dropbox\\ISCTE\\IGE\\3º ano\\ES\\Project\\spam.log");
 	String[] colunas = { "Regra", "Peso" };
 	String[][] data = {};
 	DefaultTableModel modelME = new DefaultTableModel(data, colunas);
@@ -96,16 +99,18 @@ public class GUI {
 		// linha do rules.cf
 		JPanel panelRules = new JPanel(new GridLayout(1, 2));
 		panelRules.add(rules_path);
-
 		panelRules.add(textPathRules);
+
 		// linha do ham.log
 		JPanel panelHam = new JPanel(new GridLayout(1, 2));
 		panelHam.add(ham_path);
 		panelHam.add(textPathHam);
+
 		// linha do spam.log
 		JPanel panelSpam = new JPanel(new GridLayout(1, 2));
 		panelSpam.add(spam_path);
 		panelSpam.add(textPathSpam);
+
 		// Botão para carregar os ficheiros
 		carregar_ficheiros.addActionListener(new ActionListener() {
 
@@ -113,9 +118,11 @@ public class GUI {
 			public void actionPerformed(ActionEvent arg0) {
 				readRulesFile();
 				readHamFile();
-
+				readSpamFile();
 			}
+
 		});
+
 		// criar painelLocal a ser devolvido com 2 colunas e 3 linhas
 		JPanel local = new JPanel();
 		local.setLayout(new GridLayout(4, 1));
@@ -138,8 +145,10 @@ public class GUI {
 		JPanel panelLeft = new JPanel(new BorderLayout());
 		JPanel panelRight = new JPanel(new GridLayout(3, 1));
 		JPanel panelFalsos = new JPanel();
-		JTextField fpositive = new JTextField("FP: ");
-		JTextField fnegative = new JTextField("FN: ");
+		JTextField fpositive = new JTextField("FP");
+		JTextField fnegative = new JTextField("FN");
+		fpositive.setEditable(false);
+		fnegative.setEditable(false);
 
 		// pLeft
 		JTable jTableManual = genTableManual();
@@ -166,10 +175,27 @@ public class GUI {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				fpositive.setText("FP:" + calcular_FP());
+				int i;
+				fpositive.setText(String.valueOf(calculateFalsePositives()));
+				fnegative.setText(String.valueOf(calculateFalseNegatives()));
 			}
 		});
 		JButton button_save_config = new JButton("Guardar a configuração");
+		button_save_config.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					saveConfiguration(data, textPathRules.getText());
+				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (UnsupportedEncodingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
 		panelRight.add(button_auto_config);
 		panelRight.add(button_aval_calc);
 		panelRight.add(button_save_config);
@@ -215,10 +241,18 @@ public class GUI {
 		JPanel local = new JPanel(new GridLayout(1, 2));
 		JPanel panelLeft = new JPanel(new BorderLayout());
 		JPanel panelRight = new JPanel(new GridLayout(3, 1));
+		JPanel panelFalsos = new JPanel();
+		JTextField fpositive = new JTextField("FP: ");
+		JTextField fnegative = new JTextField("FN: ");
+		fpositive.setEditable(false);
+		fnegative.setEditable(false);
 
 		// pLeft
 		JTable jTableManual = genTableAuto();
 		panelLeft.add(new JScrollPane(jTableManual));
+		panelFalsos.add(fpositive);
+		panelFalsos.add(fnegative);
+		panelLeft.add(panelFalsos, BorderLayout.SOUTH);
 
 		// pRight
 		JButton button_auto_config = new JButton("Gerar uma configuração automática");
@@ -292,22 +326,48 @@ public class GUI {
 	 */
 
 	public void readHamFile() {
+		int numlines = 0;
 		File file = new File(textPathHam.getText());
-		if (file.isFile() && file.getName().endsWith(".txt")) {
+		if (file.isFile() && file.getName().endsWith(".log")) {
 			try {
 				FileInputStream fstream = new FileInputStream(file);
 
 				try (DataInputStream in = new DataInputStream(fstream)) {
 					BufferedReader br = new BufferedReader(new InputStreamReader(in));
-					String strLine;
-					while ((strLine = br.readLine()) != null) {
+					int k = 0;
+					String strLine = br.readLine();
+					while (strLine != null) {
 						hamMessages.add(strLine);
+						strLine = br.readLine();
+						k++;
 					}
 				}
 			} catch (Exception e) {
 				System.err.println("Error: " + e.getMessage());
 			}
-			System.out.println(hamMessages);
+		}
+	}
+
+	private void readSpamFile() {
+		int numlines = 0;
+		File file = new File(textPathSpam.getText());
+		if (file.isFile() && file.getName().endsWith(".log")) {
+			try {
+				FileInputStream fstream = new FileInputStream(file);
+
+				try (DataInputStream in = new DataInputStream(fstream)) {
+					BufferedReader br = new BufferedReader(new InputStreamReader(in));
+					int k = 0;
+					String strLine = br.readLine();
+					while (strLine != null) {
+						spamMessages.add(strLine);
+						strLine = br.readLine();
+						k++;
+					}
+				}
+			} catch (Exception e) {
+				System.err.println("Error: " + e.getMessage());
+			}
 		}
 	}
 
@@ -316,13 +376,16 @@ public class GUI {
 	 * @return
 	 */
 
-	public int calcular_FP() {
-		int FP = 0;
+	public int calculateFalsePositives() {
+		// FALSE POS, hamm into spam
+		int falsePositives = 0;
 		double valor = 0;
 		String[] linha;
 		for (int i = 0; i < hamMessages.size(); i++) {
 			valor = 0;
-			linha = hamMessages.get(i).split(" ");
+			linha = hamMessages.get(i).split("\t");
+			// mensagem + REGRAS
+			// 0028674f122eeb4cd901867d74f5676c85809 +BAYES_00+ ...
 			for (int j = 1; j < linha.length; j++) {
 				for (int k = 0; k < modelME.getRowCount(); k++) {
 					if (modelME.getValueAt(k, 0).equals(linha[j])) {
@@ -331,11 +394,47 @@ public class GUI {
 				}
 			}
 			if (valor > 5) {
-				FP++;
+				falsePositives++;
 			}
 		}
-		return FP;
+		return falsePositives;
 
+	}
+
+	public int calculateFalseNegatives() {
+		// FALSE POS, hamm into spam
+		int falseNegatives = 0;
+		double valor = 0;
+		String[] linha;
+		for (int i = 0; i < spamMessages.size(); i++) {
+			valor = 0;
+			linha = spamMessages.get(i).split("\t");
+			// mensagem + REGRAS
+			// 0028674f122eeb4cd901867d74f5676c85809 +BAYES_00+ ...
+			for (int j = 1; j < linha.length; j++) {
+				for (int k = 0; k < modelME.getRowCount(); k++) {
+					if (modelME.getValueAt(k, 0).equals(linha[j])) {
+						valor += (double) modelME.getValueAt(k, 1);
+					}
+				}
+			}
+			if (valor < 5) {
+				falseNegatives++;
+			}
+		}
+		return falseNegatives;
+
+	}
+
+	public void saveConfiguration(Object[][] data, String path)
+			throws FileNotFoundException, UnsupportedEncodingException {
+		PrintWriter pw = new PrintWriter(path, "UTF-8");
+		System.out.println("AQUI");
+		for (int i = 0; i < data.length; i++) {
+			pw.write(data[i][0] + " " + data[i][1] + "\n");
+		}
+
+		pw.close();
 	}
 
 	public static void main(String[] args) {
