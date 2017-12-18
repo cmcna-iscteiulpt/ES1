@@ -394,7 +394,12 @@ public class GUI {
 			for (int j = 1; j < linha.length; j++) {
 				for (int k = 0; k < modelME.getRowCount(); k++) {
 					if (modelME.getValueAt(k, 0).equals(linha[j])) {
-						valor += (double) modelME.getValueAt(k, 1);
+						double aux;
+						if (modelME.getValueAt(k, 1) instanceof String)
+							aux = Double.parseDouble((String) modelME.getValueAt(k, 1));
+						else
+							aux = (double) modelME.getValueAt(k, 1);
+						valor += aux;
 					}
 				}
 			}
@@ -419,7 +424,14 @@ public class GUI {
 			for (int j = 1; j < linha.length; j++) {
 				for (int k = 0; k < modelME.getRowCount(); k++) {
 					if (modelME.getValueAt(k, 0).equals(linha[j])) {
-						valor += (double) modelME.getValueAt(k, 1);
+						//
+						double aux;
+						if (modelME.getValueAt(k, 1) instanceof String)
+							aux = Double.parseDouble((String) modelME.getValueAt(k, 1));
+						else
+							aux = (double) modelME.getValueAt(k, 1);
+						//
+						valor += aux;
 					}
 				}
 			}
