@@ -1,4 +1,4 @@
-package Gráfica;
+package GrÃ¡fica;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -28,7 +28,7 @@ import javax.swing.table.DefaultTableModel;
 
 /**
  * 
- * @author Rúben Beirão
+ * @author Ruben Beirao
  * @author Tiago Santos
  * @author Ben-Hur Fidalgo
  * 
@@ -41,9 +41,12 @@ public class GUI {
 	private JPanel panelUp = new JPanel();
 	private JPanel panelMedium = new JPanel();
 	private JPanel panelDown = new JPanel();
-	private JTextField textPathRules = new JTextField("C:\\Users\\Ben-Hur\\Dropbox\\ISCTE\\IGE\\3º ano\\ES\\Project\\rules.cf");
-	private JTextField textPathHam = new JTextField("C:\\Users\\Ben-Hur\\Dropbox\\ISCTE\\IGE\\3º ano\\ES\\Project\\ham.log");
-	private JTextField textPathSpam = new JTextField("C:\\Users\\Ben-Hur\\Dropbox\\ISCTE\\IGE\\3º ano\\ES\\Project\\spam.log");
+	private JTextField textPathRules = new JTextField(
+			"/Users/ben-hurfidalgo/Dropbox/ISCTE/IGE/3Âº ano/ES/Project/rules.cf");
+	private JTextField textPathHam = new JTextField(
+			"/Users/ben-hurfidalgo/Dropbox/ISCTE/IGE/3Âº ano/ES/Project/ham.log");
+	private JTextField textPathSpam = new JTextField(
+			"/Users/ben-hurfidalgo/Dropbox/ISCTE/IGE/3Âº ano/ES/Project/spam.log");
 	String[] colunas = { "Regra", "Peso" };
 	String[][] data = {};
 	DefaultTableModel modelME = new DefaultTableModel(data, colunas);
@@ -111,7 +114,7 @@ public class GUI {
 		panelSpam.add(spam_path);
 		panelSpam.add(textPathSpam);
 
-		// Botão para carregar os ficheiros
+		// Botï¿½o para carregar os ficheiros
 		carregar_ficheiros.addActionListener(new ActionListener() {
 
 			@Override
@@ -158,7 +161,7 @@ public class GUI {
 		panelLeft.add(panelFalsos, BorderLayout.SOUTH);
 
 		// pRight
-		JButton button_auto_config = new JButton("Gerar uma configuração automática");
+		JButton button_auto_config = new JButton("Gerar uma configuracao automatica");
 		button_auto_config.addActionListener(new ActionListener() {
 
 			@Override
@@ -180,7 +183,7 @@ public class GUI {
 				fnegative.setText(String.valueOf(calculateFalseNegatives()));
 			}
 		});
-		JButton button_save_config = new JButton("Guardar a configuração");
+		JButton button_save_config = new JButton("Guardar a configuracao");
 		button_save_config.addActionListener(new ActionListener() {
 
 			@Override
@@ -200,7 +203,7 @@ public class GUI {
 		panelRight.add(button_aval_calc);
 		panelRight.add(button_save_config);
 
-		// adicionar os paineis interiores ao painel médio
+		// adicionar os paineis interiores ao painel medio
 		local.add(panelLeft);
 		local.add(panelRight);
 		return local;
@@ -255,12 +258,12 @@ public class GUI {
 		panelLeft.add(panelFalsos, BorderLayout.SOUTH);
 
 		// pRight
-		JButton button_auto_config = new JButton("Gerar uma configuração automática");
-		JButton button_save_config = new JButton("Guardar a configuração");
+		JButton button_auto_config = new JButton("Gerar uma configuracao automatica");
+		JButton button_save_config = new JButton("Guardar a configuracao");
 		panelRight.add(button_auto_config);
 		panelRight.add(button_save_config);
 
-		// adicionar os paineis interiores ao painel médio
+		// adicionar os paineis interiores ao painel medio
 		local.add(panelLeft);
 		local.add(panelRight);
 		return local;
@@ -306,13 +309,15 @@ public class GUI {
 					String strLine;
 					String[] regra = new String[2];
 					while ((strLine = br.readLine()) != null) {
-						regra[0] = strLine;
+						String[] rule = strLine.split("\t");
+						regra[0] = rule[0];
+						if (rule.length > 1 && rule[1] != null)
+							regra[1] = rule[1];
 						// Print the content on the console
 						regras.add(regra[0]);
 						modelME.addRow(regra);
 						modelIN.addRow(regra);
 					}
-
 				}
 
 			} catch (Exception e) {// Catch exception if any
@@ -429,11 +434,13 @@ public class GUI {
 	public void saveConfiguration(Object[][] data, String path)
 			throws FileNotFoundException, UnsupportedEncodingException {
 		PrintWriter pw = new PrintWriter(path, "UTF-8");
-		System.out.println("AQUI");
-		for (int i = 0; i < data.length; i++) {
-			pw.write(data[i][0] + " " + data[i][1] + "\n");
+		/*
+		 * for (int i = 0; i < data.length; i++) { pw.write(data[i][0] + "\t" +
+		 * data[i][1] + "\n"); }
+		 */
+		for (int i = 0; i < modelME.getRowCount(); i++) {
+			pw.write(modelME.getValueAt(i, 0) + "\t" + modelME.getValueAt(i, 1) + "\n");
 		}
-
 		pw.close();
 	}
 
