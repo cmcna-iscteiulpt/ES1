@@ -553,14 +553,19 @@ public class GUI {
 		new GUI();
 		String[] params = new String [2];
 	    String[] envp = new String [1];
-	    params[0] = "C:\\Program Files\\R\\R-3.4.1\\bin\\x64\\Rscript.exe";
-	    params[1] = "C:\\Users\\vbasto\\git\\ES1\\experimentBaseDirectory\\AntiSpamStudy\\R\\HV.Boxplot.R";
-	    //Runtime.getRuntime().exec(params);
+	    params[0] = "C:\\Program Files\\R\\R-3.4.3\\bin\\x64\\Rscript.exe";
+	    params[1] = "C:\\Users\\Rúben Beirão\\git\\ES1-2017-IC1-61\\experimentBaseDirectory\\AntiSpamStudy\\R\\HV.Boxplot.R";
+	    try {
+			Runtime.getRuntime().exec(params);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	    //Process p = Runtime.getRuntime().exec("cmd /C dir");
-	      //Process p = Runtime.getRuntime().exec(params);
+	    //Process p = Runtime.getRuntime().exec(params);
 	    envp[0] = "Path=C:\\Program Files\\R\\R-3.4.1\\bin\\x64";
 	    try {
-			Process p = Runtime.getRuntime().exec(params, envp, new File("C:\\Users\\vbasto\\git\\ES1\\experimentBaseDirectory\\AntiSpamStudy\\R"));
+			Process p = Runtime.getRuntime().exec(params, envp, new File("C:\\Users\\Rúben Beirão\\git\\ES1-2017-IC1-61\\experimentBaseDirectory\\AntiSpamStudy\\R"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
