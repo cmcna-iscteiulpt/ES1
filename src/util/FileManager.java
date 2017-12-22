@@ -8,13 +8,11 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import Gráfica.GUI;
-
+import Grafica.GUI;
 
 public class FileManager {
-	public static String rulesDefaultLocation = "C:\\Users\\Rúben Beirão\\Desktop\\Projeto_ES1\\rules.cf",
-			hamDefaultLocation = "C:\\Users\\Rúben Beirão\\Desktop\\Projeto_ES1\\ham.log",
-			spamDefaultLocation = "C:\\Users\\Rúben Beirão\\Desktop\\Projeto_ES1\\spam.log";
+	public static String rulesDefaultLocation = "filesForTesting/rules.cf",
+			hamDefaultLocation = "filesForTesting/ham.log", spamDefaultLocation = "filesForTesting/spam.log";
 
 	List<String> regras = new ArrayList<String>();
 	List<String> hamMessages = new ArrayList<String>();
@@ -36,7 +34,7 @@ public class FileManager {
 	}
 
 	public List<String> getRegras() {
-		if (regras.size() == 0) 
+		if (regras.size() == 0)
 			readRulesFile();
 		return regras;
 	}
@@ -126,6 +124,6 @@ public class FileManager {
 	}
 
 	public void setGUI(GUI gui) {
-		this.GUI = gui;		
+		this.GUI = gui;
 	}
 }
