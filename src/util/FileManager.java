@@ -8,13 +8,13 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import GrÃ¡fica.GUI;
+import Gráfica.GUI;
 
 
 public class FileManager {
-	public static String rulesDefaultLocation = "/Users/ben-hurfidalgo/Dropbox/ISCTE/IGE/3Âº ano/ES/Project/rules.cf",
-			hamDefaultLocation = "/Users/ben-hurfidalgo/Dropbox/ISCTE/IGE/3Âº ano/ES/Project/ham.log",
-			spamDefaultLocation = "/Users/ben-hurfidalgo/Dropbox/ISCTE/IGE/3Âº ano/ES/Project/spam.log";
+	public static String rulesDefaultLocation = "C:\\Users\\Rúben Beirão\\Desktop\\Projeto_ES1\\rules.cf",
+			hamDefaultLocation = "C:\\Users\\Rúben Beirão\\Desktop\\Projeto_ES1\\ham.log",
+			spamDefaultLocation = "C:\\Users\\Rúben Beirão\\Desktop\\Projeto_ES1\\spam.log";
 
 	List<String> regras = new ArrayList<String>();
 	List<String> hamMessages = new ArrayList<String>();

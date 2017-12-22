@@ -1,0 +1,19 @@
+Sprint Retrospective 1
+Data e hora: 23/11/2017 às 18:30
+Presenças: Todos os membros da equipa
+Ponto da situação: Foi feita a análise do código e discutido o que teria de ser feito a seguir.
+Próximas tarefas: Definir os próximos sprints a serem realizados e registá-los no trello.
+
+Sprint Retrospective 2
+Data e hora: 28/11/2017 às 18:30
+Presenças: Todos os membros da equipa
+Ponto da situação: Foi discutido o design da interface gráfica (GUI) a implementar submetida no trello.
+Próximas tarefas:  Implementar a GUI até 09/12. Definir datas para os sprints Determinar a quantidade de FP e FN e Gerar vetor aleatório de pesos.
+Pontos a melhorar: Organizar melhor o trello.
+
+Sprint Retrospective 3
+Data e hora: 12/12/2017 às 18:30
+Presenças: Todos os membros da equipa
+Ponto da Situação: A GUI foi implementada. 
+Próximas tarefas: Os sprints Gerar vetor aleatório de pesos e Determinar quantidade de FP e FN vão sofrer alterações passando um para dia 13/12 e o outro para 19/12, respetivamente. A configuração de paths na aplicação também será feita.
+Pontos a melhorar: Maior rigor ao definir as datas das tarefas.
