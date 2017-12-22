@@ -551,5 +551,19 @@ public class GUI {
 	public static void main(String[] args) {
 		// main
 		new GUI();
+		String[] params = new String [2];
+	    String[] envp = new String [1];
+	    params[0] = "C:\\Program Files\\R\\R-3.4.1\\bin\\x64\\Rscript.exe";
+	    params[1] = "C:\\Users\\vbasto\\git\\ES1\\experimentBaseDirectory\\AntiSpamStudy\\R\\HV.Boxplot.R";
+	    //Runtime.getRuntime().exec(params);
+	    //Process p = Runtime.getRuntime().exec("cmd /C dir");
+	      //Process p = Runtime.getRuntime().exec(params);
+	    envp[0] = "Path=C:\\Program Files\\R\\R-3.4.1\\bin\\x64";
+	    try {
+			Process p = Runtime.getRuntime().exec(params, envp, new File("C:\\Users\\vbasto\\git\\ES1\\experimentBaseDirectory\\AntiSpamStudy\\R"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
