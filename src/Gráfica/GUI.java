@@ -9,11 +9,13 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.JButton;
@@ -25,6 +27,25 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
+
+import org.uma.jmetal.algorithm.Algorithm;
+import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIBuilder;
+import org.uma.jmetal.operator.impl.crossover.SBXCrossover;
+import org.uma.jmetal.operator.impl.mutation.PolynomialMutation;
+import org.uma.jmetal.qualityindicator.impl.hypervolume.PISAHypervolume;
+import org.uma.jmetal.solution.DoubleSolution;
+import org.uma.jmetal.util.experiment.Experiment;
+import org.uma.jmetal.util.experiment.ExperimentBuilder;
+import org.uma.jmetal.util.experiment.component.ComputeQualityIndicators;
+import org.uma.jmetal.util.experiment.component.ExecuteAlgorithms;
+import org.uma.jmetal.util.experiment.component.GenerateBoxplotsWithR;
+import org.uma.jmetal.util.experiment.component.GenerateLatexTablesWithStatistics;
+import org.uma.jmetal.util.experiment.component.GenerateReferenceParetoSetAndFrontFromDoubleSolutions;
+import org.uma.jmetal.util.experiment.util.ExperimentAlgorithm;
+import org.uma.jmetal.util.experiment.util.ExperimentProblem;
+
+import antiSpamFilter.AntiSpamFilterProblem;
+import util.FileManager;
 
 /**
  * 
@@ -41,19 +62,14 @@ public class GUI {
 	private JPanel panelUp = new JPanel();
 	private JPanel panelMedium = new JPanel();
 	private JPanel panelDown = new JPanel();
-	private JTextField textPathRules = new JTextField(
-			"/Users/ben-hurfidalgo/Dropbox/ISCTE/IGE/3º ano/ES/Project/rules.cf");
-	private JTextField textPathHam = new JTextField(
-			"/Users/ben-hurfidalgo/Dropbox/ISCTE/IGE/3º ano/ES/Project/ham.log");
-	private JTextField textPathSpam = new JTextField(
-			"/Users/ben-hurfidalgo/Dropbox/ISCTE/IGE/3º ano/ES/Project/spam.log");
+	private JTextField textPathRules = new JTextField(FileManager.rulesDefaultLocation);
+	private JTextField textPathHam = new JTextField(FileManager.hamDefaultLocation);
+	private JTextField textPathSpam = new JTextField(FileManager.spamDefaultLocation);
+	FileManager fileManager = FileManager.getInstance();
 	String[] colunas = { "Regra", "Peso" };
 	String[][] data = {};
 	DefaultTableModel modelME = new DefaultTableModel(data, colunas);
 	DefaultTableModel modelIN = new DefaultTableModel(data, colunas);
-	ArrayList<String> regras = new ArrayList<String>();
-	ArrayList<String> hamMessages = new ArrayList<String>();
-	ArrayList<String> spamMessages = new ArrayList<String>();
 
 	/**
 	 * This method creates the GUI after running all methods
@@ -66,6 +82,19 @@ public class GUI {
 		// frame.setSize(620, 500);
 		frame.pack();
 		frame.setVisible(true);
+		fileManager.setGUI(this);
+	}
+
+	public JTextField getTextPathRules() {
+		return textPathRules;
+	}
+
+	public JTextField getTextPathHam() {
+		return textPathHam;
+	}
+
+	public JTextField getTextPathSpam() {
+		return textPathSpam;
 	}
 
 	/**
@@ -120,8 +149,8 @@ public class GUI {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				readRulesFile();
-				readHamFile();
-				readSpamFile();
+				fileManager.readHamFile();
+				fileManager.readSpamFile();
 			}
 
 		});
@@ -166,6 +195,7 @@ public class GUI {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				List<String> regras = fileManager.getRegras();
 				for (int i = 0; i < regras.size(); i++) {
 					double p = ThreadLocalRandom.current().nextDouble(-5, 5);
 					p = Math.round(p * 10) / 10D;
@@ -178,9 +208,8 @@ public class GUI {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				int i;
-				fpositive.setText(String.valueOf(calculateFalsePositives()));
-				fnegative.setText(String.valueOf(calculateFalseNegatives()));
+				fpositive.setText(String.valueOf(calculateFalsePositives(modelME)));
+				fnegative.setText(String.valueOf(calculateFalseNegatives(modelME)));
 			}
 		});
 		JButton button_save_config = new JButton("Guardar a configuracao");
@@ -189,12 +218,10 @@ public class GUI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					saveConfiguration(data, textPathRules.getText());
+					saveConfiguration(data, textPathRules.getText(), modelME);
 				} catch (FileNotFoundException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				} catch (UnsupportedEncodingException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}
@@ -214,22 +241,6 @@ public class GUI {
 	 */
 
 	private JTable genTableManual() {
-		/*
-		 * Then the Table is constructed using these data and columnNames: JTable table
-		 * = new JTable(data, columnNames); There are two JTable constructors that
-		 * directly accept data (SimpleTableDemo uses the first): JTable(Object[][]
-		 * rowData, Object[] columnNames) JTable(Vector rowData, Vector columnNames)
-		 */
-		// String[] nomeColunas = { "Regra", "Peso" };
-		// Object data[][] = { { "Regra1", "Peso1" }, { "Regra3", "Peso3" }, { "Regra3",
-		// "Peso3" }, { "Regra3", "Peso3" },
-		// { "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" }, {
-		// "Regra3", "Peso3" },
-		// { "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" }, {
-		// "Regra3", "Peso3" },
-		// { "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" }, {
-		// "Regra7", "Peso3" } };
-
 		JTable local = new JTable(modelME);
 		local.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		return local;
@@ -259,7 +270,34 @@ public class GUI {
 
 		// pRight
 		JButton button_auto_config = new JButton("Gerar uma configuracao automatica");
+
+		button_auto_config.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					automaticConfiguration();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				readRulesFileAuto();
+				fpositive.setText(String.valueOf(calculateFalsePositives(modelIN)));
+				fnegative.setText(String.valueOf(calculateFalseNegatives(modelIN)));
+			}
+		});
+
 		JButton button_save_config = new JButton("Guardar a configuracao");
+		button_save_config.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					saveConfiguration(data, textPathRules.getText(), modelIN);
+				} catch (FileNotFoundException e1) {
+					e1.printStackTrace();
+				} catch (UnsupportedEncodingException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
 		panelRight.add(button_auto_config);
 		panelRight.add(button_save_config);
 
@@ -275,18 +313,6 @@ public class GUI {
 	 */
 
 	private JTable genTableAuto() {
-		// String[] nomeColunas = { "Regra", "Peso" };
-		// Object data[][] = { { "Regra1", "Peso1" }, { "Regra3", "Peso3" }, { "Regra3",
-		// "Peso3" }, { "Regra3", "Peso3" },
-		// { "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" }, {
-		// "Regra3", "Peso3" },
-		// { "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" }, {
-		// "Regra3", "Peso3" },
-		// { "Regra3", "Peso3" }, { "Regra3", "Peso3" }, { "Regra3", "Peso3" }, {
-		// "Regra7", "Peso3" } };
-		// JTable local = new JTable(data, nomeColunas);
-		// local.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-		// return local;
 		JTable local = new JTable(modelIN);
 		local.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		return local;
@@ -296,8 +322,13 @@ public class GUI {
 	 * 
 	 */
 
+	@SuppressWarnings("static-access")
 	public void readRulesFile() {
-		File file = new File(textPathRules.getText());
+		File file;
+		if (textPathRules.getText().length() > 1)
+			file = new File(textPathRules.getText());
+		else
+			file = new File(textPathRules.getText());
 
 		if (file.isFile() && file.getName().endsWith(".cf")) {
 
@@ -314,7 +345,6 @@ public class GUI {
 						if (rule.length > 1 && rule[1] != null)
 							regra[1] = rule[1];
 						// Print the content on the console
-						regras.add(regra[0]);
 						modelME.addRow(regra);
 						modelIN.addRow(regra);
 					}
@@ -326,79 +356,93 @@ public class GUI {
 		}
 	}
 
-	/**
-	 * 
-	 */
-
-	public void readHamFile() {
-		int numlines = 0;
-		File file = new File(textPathHam.getText());
-		if (file.isFile() && file.getName().endsWith(".log")) {
+	public void readRulesFileAuto() {
+		String pathQuality = "experimentBaseDirectory/RESULTADOS/AntiSpamFilterProblem.rf";
+		String pathData = "experimentBaseDirectory/RESULTADOS/AntiSpamFilterProblem.rs";
+		File fileQuality = new File(pathQuality);
+		int lineLeastFP = findLowestFP(fileQuality);
+		File fileData = new File(pathData);
+		if (fileData.isFile() && fileData.getName().endsWith(".rs")) {
 			try {
-				FileInputStream fstream = new FileInputStream(file);
-
+				FileInputStream fstream = new FileInputStream(fileData);
 				try (DataInputStream in = new DataInputStream(fstream)) {
 					BufferedReader br = new BufferedReader(new InputStreamReader(in));
+					String strLine;
 					int k = 0;
-					String strLine = br.readLine();
-					while (strLine != null) {
-						hamMessages.add(strLine);
-						strLine = br.readLine();
+					boolean done = false;
+					while ((strLine = br.readLine()) != null && !done) {
+						if (k == lineLeastFP) {
+							String[] weights = strLine.split(" ");
+							for (int i = 0; i < weights.length; i++) {
+								String info = weights[i];
+								double value = Double.parseDouble(info);
+								// Print the content on the console
+								modelIN.setValueAt(value, i, 1);
+							}
+							done = true;
+						}
 						k++;
 					}
 				}
-			} catch (Exception e) {
+			} catch (Exception e) {// Catch exception if any
 				System.err.println("Error: " + e.getMessage());
 			}
 		}
 	}
 
-	private void readSpamFile() {
-		int numlines = 0;
-		File file = new File(textPathSpam.getText());
-		if (file.isFile() && file.getName().endsWith(".log")) {
+	private int findLowestFP(File fileQuality) {
+		int lineBest = -1, lineCounter = 0;
+		double lowestValue = -1;
+		if (fileQuality.getName().endsWith(".rf")) {
 			try {
-				FileInputStream fstream = new FileInputStream(file);
-
+				FileInputStream fstream = new FileInputStream(fileQuality);
 				try (DataInputStream in = new DataInputStream(fstream)) {
 					BufferedReader br = new BufferedReader(new InputStreamReader(in));
-					int k = 0;
-					String strLine = br.readLine();
-					while (strLine != null) {
-						spamMessages.add(strLine);
-						strLine = br.readLine();
-						k++;
+					String strLine;
+					while ((strLine = br.readLine()) != null) {
+						String[] info = strLine.split(" ");
+						if (lowestValue == -1) {
+							lowestValue = Double.parseDouble(info[0]);
+							lineBest = lineCounter;
+						} else if (lowestValue > Double.parseDouble(info[0])) {
+							lowestValue = Double.parseDouble(info[0]);
+							lineBest = lineCounter;
+						}
+						lineCounter++;
 					}
 				}
-			} catch (Exception e) {
+			} catch (Exception e) {// Catch exception if any
 				System.err.println("Error: " + e.getMessage());
 			}
 		}
+		return lineBest;
 	}
 
 	/**
 	 * 
+	 * @param model 
 	 * @return
 	 */
 
-	public int calculateFalsePositives() {
+	public int calculateFalsePositives(DefaultTableModel model) {
 		// FALSE POS, hamm into spam
 		int falsePositives = 0;
 		double valor = 0;
 		String[] linha;
+		List<String> hamMessages = fileManager.getHamMessages();
 		for (int i = 0; i < hamMessages.size(); i++) {
 			valor = 0;
 			linha = hamMessages.get(i).split("\t");
 			// mensagem + REGRAS
 			// 0028674f122eeb4cd901867d74f5676c85809 +BAYES_00+ ...
 			for (int j = 1; j < linha.length; j++) {
-				for (int k = 0; k < modelME.getRowCount(); k++) {
-					if (modelME.getValueAt(k, 0).equals(linha[j])) {
+				for (int k = 0; k < model.getRowCount(); k++) {
+					if (model.getValueAt(k, 0).equals(linha[j])) {
 						double aux;
-						if (modelME.getValueAt(k, 1) instanceof String)
-							aux = Double.parseDouble((String) modelME.getValueAt(k, 1));
+						if (model.getValueAt(k, 1) instanceof String)
+							aux = Double.parseDouble((String) model.getValueAt(k, 1));
 						else
-							aux = (double) modelME.getValueAt(k, 1);
+							aux = (double) model.getValueAt(k, 1);
 						valor += aux;
 					}
 				}
@@ -411,25 +455,26 @@ public class GUI {
 
 	}
 
-	public int calculateFalseNegatives() {
+	public int calculateFalseNegatives(DefaultTableModel model) {
 		// FALSE POS, hamm into spam
 		int falseNegatives = 0;
 		double valor = 0;
 		String[] linha;
+		List<String> spamMessages = fileManager.getSpamMessages();
 		for (int i = 0; i < spamMessages.size(); i++) {
 			valor = 0;
 			linha = spamMessages.get(i).split("\t");
 			// mensagem + REGRAS
 			// 0028674f122eeb4cd901867d74f5676c85809 +BAYES_00+ ...
 			for (int j = 1; j < linha.length; j++) {
-				for (int k = 0; k < modelME.getRowCount(); k++) {
-					if (modelME.getValueAt(k, 0).equals(linha[j])) {
+				for (int k = 0; k < model.getRowCount(); k++) {
+					if (model.getValueAt(k, 0).equals(linha[j])) {
 						//
 						double aux;
-						if (modelME.getValueAt(k, 1) instanceof String)
-							aux = Double.parseDouble((String) modelME.getValueAt(k, 1));
+						if (model.getValueAt(k, 1) instanceof String)
+							aux = Double.parseDouble((String) model.getValueAt(k, 1));
 						else
-							aux = (double) modelME.getValueAt(k, 1);
+							aux = (double) model.getValueAt(k, 1);
 						//
 						valor += aux;
 					}
@@ -443,17 +488,60 @@ public class GUI {
 
 	}
 
-	public void saveConfiguration(Object[][] data, String path)
+	public void saveConfiguration(Object[][] data, String path, DefaultTableModel model)
 			throws FileNotFoundException, UnsupportedEncodingException {
 		PrintWriter pw = new PrintWriter(path, "UTF-8");
-		/*
-		 * for (int i = 0; i < data.length; i++) { pw.write(data[i][0] + "\t" +
-		 * data[i][1] + "\n"); }
-		 */
-		for (int i = 0; i < modelME.getRowCount(); i++) {
-			pw.write(modelME.getValueAt(i, 0) + "\t" + modelME.getValueAt(i, 1) + "\n");
+		for (int i = 0; i < model.getRowCount(); i++) {
+			pw.write(model.getValueAt(i, 0) + "\t" + model.getValueAt(i, 1) + "\n");
 		}
 		pw.close();
+	}
+
+	public void writeFalseAuto() {
+		// modelIN.setValueAt(p, i, 1);
+
+	}
+
+	private static final int INDEPENDENT_RUNS = 5;
+
+	private void automaticConfiguration() throws IOException {
+		String experimentBaseDirectory = "experimentBaseDirectory";
+
+		List<ExperimentProblem<DoubleSolution>> problemList = new ArrayList<>();
+		problemList.add(new ExperimentProblem<>(new AntiSpamFilterProblem(fileManager.getRegras().size())));
+
+		List<ExperimentAlgorithm<DoubleSolution, List<DoubleSolution>>> algorithmList = configureAlgorithmList(
+				problemList);
+
+		Experiment<DoubleSolution, List<DoubleSolution>> experiment = new ExperimentBuilder<DoubleSolution, List<DoubleSolution>>(
+				"AntiSpamStudy").setAlgorithmList(algorithmList).setProblemList(problemList)
+						.setExperimentBaseDirectory(experimentBaseDirectory).setOutputParetoFrontFileName("FUN")
+						.setOutputParetoSetFileName("VAR")
+						.setReferenceFrontDirectory(experimentBaseDirectory + "/RESULTADOS")
+						.setIndicatorList(Arrays.asList(new PISAHypervolume<DoubleSolution>()))
+						.setIndependentRuns(INDEPENDENT_RUNS).setNumberOfCores(8).build();
+
+		new ExecuteAlgorithms<>(experiment).run();
+		new GenerateReferenceParetoSetAndFrontFromDoubleSolutions(experiment).run();
+		new ComputeQualityIndicators<>(experiment).run();
+		new GenerateLatexTablesWithStatistics(experiment).run();
+		new GenerateBoxplotsWithR<>(experiment).setRows(1).setColumns(1).run();
+
+	}
+
+	List<ExperimentAlgorithm<DoubleSolution, List<DoubleSolution>>> configureAlgorithmList(
+			List<ExperimentProblem<DoubleSolution>> problemList) {
+		List<ExperimentAlgorithm<DoubleSolution, List<DoubleSolution>>> algorithms = new ArrayList<>();
+
+		for (int i = 0; i < problemList.size(); i++) {
+			Algorithm<List<DoubleSolution>> algorithm = new NSGAIIBuilder<>(problemList.get(i).getProblem(),
+					new SBXCrossover(1.0, 5),
+					new PolynomialMutation(1.0 / problemList.get(i).getProblem().getNumberOfVariables(), 10.0))
+							.setMaxEvaluations(25000).setPopulationSize(100).build();
+			algorithms.add(new ExperimentAlgorithm<>(algorithm, "NSGAII", problemList.get(i).getTag()));
+		}
+
+		return algorithms;
 	}
 
 	public static void main(String[] args) {
