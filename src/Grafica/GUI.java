@@ -1,4 +1,4 @@
-package Gráfica;
+package Grafica;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -72,7 +72,7 @@ public class GUI {
 	DefaultTableModel modelIN = new DefaultTableModel(data, colunas);
 
 	/**
-	 * This method creates the GUI after running all methods
+	 * This method generates the anti-spam filter GUI for testing purposes
 	 */
 
 	public GUI() {
@@ -85,20 +85,42 @@ public class GUI {
 		fileManager.setGUI(this);
 	}
 
+	/**
+	 * This function returns the swing element JTextField containing the path for
+	 * the Rules file. By default it point to a file stored locally on the project
+	 * folder
+	 * 
+	 * @return
+	 */
 	public JTextField getTextPathRules() {
 		return textPathRules;
 	}
 
+	/**
+	 * This function returns the swing element JTextField containing the path for
+	 * the ham messages file. By default it point to a file stored locally on the
+	 * project folder
+	 * 
+	 * @return
+	 */
 	public JTextField getTextPathHam() {
 		return textPathHam;
 	}
 
+	/**
+	 * This function returns the swing element JTextField containing the path for
+	 * the spam messages file. By default it point to a file stored locally on the
+	 * project folder
+	 * 
+	 * @return
+	 */
 	public JTextField getTextPathSpam() {
 		return textPathSpam;
 	}
 
 	/**
-	 * This method adds all the contents that will appear in the frame
+	 * This method adds calls the content generating functions, and adds the first
+	 * to the GUI
 	 */
 
 	private void addFrameContent() {
@@ -117,9 +139,10 @@ public class GUI {
 	}
 
 	/**
-	 * This method creates the upper section of the GUI
-	 * It's divided into three JLabels witch receives the files paths of the rules, ham addresses and the spam addresses
-	 * finally creates a button to load the files specified by the user
+	 * This function return the top panel of the GUI, containing the a file manager
+	 * section for testing purposes
+	 * 
+	 * @return
 	 */
 	private JPanel painelSuperior() {
 		// labels estaticas
@@ -168,9 +191,10 @@ public class GUI {
 	}
 
 	/**
-	 * This method creates the middle section of the GUI
-	 * It's divided into two panels: the left panel have a table with both the existing rules and their weigh of evaluation
-	 * the right panel it's composed of three buttons: the first generates weighs to be given to the each rule; the second evaluate the number of false-positives(FP) and false-negatives(FN); the third saves the actual configuration that is in use.
+	 * This function return the middle panel of the GUI, which provides an interface
+	 * for a manual and random configuration of the anti-spam filter
+	 * 
+	 * @return
 	 */
 
 	private JPanel generatePainelMed() {
@@ -220,7 +244,7 @@ public class GUI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					saveConfiguration(data, textPathRules.getText(), modelME);
+					saveConfiguration(textPathRules.getText(), modelME);
 				} catch (FileNotFoundException e1) {
 					e1.printStackTrace();
 				} catch (UnsupportedEncodingException e1) {
@@ -239,7 +263,10 @@ public class GUI {
 	}
 
 	/**
-	 * This method generates the table design for the manual operation.
+	 * This function return the actual table where the rules, and respective
+	 * weights, will be represented in it's parent panel
+	 * 
+	 * @return
 	 */
 
 	private JTable genTableManual() {
@@ -249,10 +276,10 @@ public class GUI {
 	}
 
 	/**
-	 * this method creates the inferior panel witch will be the equals to the  middle panel with the exception of having one less button and the methods in those two buttons being different from the ones in the middle panel.
-	 * In the same way, it's divided into two panels: the left panel and the right panel.
-	 * the left panel also have a table in the same way as the middle panel.
-	 * the right panel only have the random weigh generation but this method instantly calculates the number of FP and FN with the new generated weigh, and the save configuration button.
+	 * This function return the bottom panel of the GUI, which provides an interface
+	 * for the automatic configuration of the anti-spam filter
+	 * 
+	 * @return
 	 */
 
 	private JPanel generatePainelInferior() {
@@ -294,7 +321,7 @@ public class GUI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					saveConfiguration(data, textPathRules.getText(), modelIN);
+					saveConfiguration(textPathRules.getText(), modelIN);
 				} catch (FileNotFoundException e1) {
 					e1.printStackTrace();
 				} catch (UnsupportedEncodingException e1) {
@@ -312,7 +339,10 @@ public class GUI {
 	}
 
 	/**
-	 * this method generates the table used in the automated version
+	 * This function return the actual table where the rules, and respective
+	 * weights, will be represented in it's parent panel
+	 * 
+	 * @return
 	 */
 
 	private JTable genTableAuto() {
@@ -322,8 +352,10 @@ public class GUI {
 	}
 
 	/**
-	 * This method is used to read the file containing all the rules in use
-	 * It verifies if the loaded file is a .cf file and, if it is, it 
+	 * This functions reads the goes over the rules files, getting all the names of
+	 * the last in order to populate the populate the naming section, on both the
+	 * automatic and manual configuration sections. Moreover this function also gets
+	 * the weights associated with each rule if available
 	 */
 
 	@SuppressWarnings("static-access")
@@ -333,12 +365,9 @@ public class GUI {
 			file = new File(textPathRules.getText());
 		else
 			file = new File(textPathRules.getText());
-
 		if (file.isFile() && file.getName().endsWith(".cf")) {
-
 			try {
 				FileInputStream fstream = new FileInputStream(file);
-
 				try (DataInputStream in = new DataInputStream(fstream)) {
 					BufferedReader br = new BufferedReader(new InputStreamReader(in));
 					String strLine;
@@ -353,13 +382,17 @@ public class GUI {
 						modelIN.addRow(regra);
 					}
 				}
-
 			} catch (Exception e) {// Catch exception if any
 				System.err.println("Error: " + e.getMessage());
 			}
 		}
 	}
 
+	/**
+	 * This function extrapolates over the automatic configuration generated files,
+	 * in order to pick and implement best weights game of the anti-spam filter. The
+	 * latest affects exclusively the automatic configuration section of the GUI
+	 */
 	public void readRulesFileAuto() {
 		String pathQuality = "experimentBaseDirectory/RESULTADOS/AntiSpamFilterProblem.rf";
 		String pathData = "experimentBaseDirectory/RESULTADOS/AntiSpamFilterProblem.rs";
@@ -394,6 +427,13 @@ public class GUI {
 		}
 	}
 
+	/**
+	 * This function returns the line of the best configuration available, generated
+	 * by the automatic configuration algorithm.
+	 * 
+	 * @param fileQuality
+	 * @return
+	 */
 	private int findLowestFP(File fileQuality) {
 		int lineBest = -1, lineCounter = 0;
 		double lowestValue = -1;
@@ -423,8 +463,11 @@ public class GUI {
 	}
 
 	/**
+	 * By being provided a DefaultTableModel, this function goes over the last and
+	 * returns the number of false positives as a consequence of the latest
+	 * rules-weight configuration
 	 * 
-	 * @param model 
+	 * @param model
 	 * @return
 	 */
 
@@ -459,6 +502,14 @@ public class GUI {
 
 	}
 
+	/**
+	 * By being provided a DefaultTableModel, this function goes over the last and
+	 * returns the number of false negatives as a consequence of the latest
+	 * rules-weight configuration
+	 * 
+	 * @param model
+	 * @return
+	 */
 	public int calculateFalseNegatives(DefaultTableModel model) {
 		// FALSE POS, hamm into spam
 		int falseNegatives = 0;
@@ -492,7 +543,17 @@ public class GUI {
 
 	}
 
-	public void saveConfiguration(Object[][] data, String path, DefaultTableModel model)
+	/**
+	 * This function pulls the data out of a given model and writes it on a given
+	 * path, in order to allow future use
+	 * 
+	 * @param data
+	 * @param path
+	 * @param model
+	 * @throws FileNotFoundException
+	 * @throws UnsupportedEncodingException
+	 */
+	public void saveConfiguration(String path, DefaultTableModel model)
 			throws FileNotFoundException, UnsupportedEncodingException {
 		PrintWriter pw = new PrintWriter(path, "UTF-8");
 		for (int i = 0; i < model.getRowCount(); i++) {
@@ -501,13 +562,14 @@ public class GUI {
 		pw.close();
 	}
 
-	public void writeFalseAuto() {
-		// modelIN.setValueAt(p, i, 1);
-
-	}
-
 	private static final int INDEPENDENT_RUNS = 5;
 
+	/**
+	 * This function runs the automatic configuration algorithm, in order to generate
+	 * and pick from the top 3 setups generated by last
+	 * 
+	 * @throws IOException
+	 */
 	private void automaticConfiguration() throws IOException {
 		String experimentBaseDirectory = "experimentBaseDirectory";
 
@@ -547,28 +609,12 @@ public class GUI {
 
 		return algorithms;
 	}
-
+/**
+ * This function calls the GUI constructor and puts it on the screen
+ * @param args
+ */
 	public static void main(String[] args) {
 		// main
 		new GUI();
-		String[] params = new String [2];
-	    String[] envp = new String [1];
-	    params[0] = "C:\\Program Files\\R\\R-3.4.3\\bin\\x64\\Rscript.exe";
-	    params[1] = "C:\\Users\\Rúben Beirão\\git\\ES1-2017-IC1-61\\experimentBaseDirectory\\AntiSpamStudy\\R\\HV.Boxplot.R";
-	    try {
-			Runtime.getRuntime().exec(params);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-	    //Process p = Runtime.getRuntime().exec("cmd /C dir");
-	    //Process p = Runtime.getRuntime().exec(params);
-	    envp[0] = "Path=C:\\Program Files\\R\\R-3.4.1\\bin\\x64";
-	    try {
-			Process p = Runtime.getRuntime().exec(params, envp, new File("C:\\Users\\Rúben Beirão\\git\\ES1-2017-IC1-61\\experimentBaseDirectory\\AntiSpamStudy\\R"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 }

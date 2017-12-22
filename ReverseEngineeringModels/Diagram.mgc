@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ClassDiagram>
-    <Class name="antiSpamFilter.AntiSpamFilterProblem" x="425" y="32">
+    <Class name="util.FileManager" x="267" y="374">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -8,9 +8,10 @@
             private-accepted="false" protected-accepted="false"
             default-accepted="false" static-accepted="false"
             accessors-accepted="false" constructors-accepted="false"/>
+        <Association destinationClassName="Grafica.GUI"
+            endpointName="GUI" kind="Simple"/>
     </Class>
-    <Class name="antiSpamFilter.AntiSpamFilterAutomaticConfiguration"
-        x="42" y="62">
+    <Class name="Grafica.GUI" x="502" y="115">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -18,8 +19,11 @@
             private-accepted="false" protected-accepted="false"
             default-accepted="false" static-accepted="false"
             accessors-accepted="false" constructors-accepted="false"/>
+        <Association destinationClassName="util.FileManager"
+            endpointName="fileManager" kind="Simple"/>
+        <Communication destinationClassName="util.FileManager"/>
     </Class>
-    <Class name="Gráfica.GUI" x="209" y="127">
+    <Class name="antiSpamFilter.AntiSpamFilterProblem" x="120" y="180">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -27,5 +31,6 @@
             private-accepted="false" protected-accepted="false"
             default-accepted="false" static-accepted="false"
             accessors-accepted="false" constructors-accepted="false"/>
+        <Communication destinationClassName="util.FileManager"/>
     </Class>
 </ClassDiagram>
