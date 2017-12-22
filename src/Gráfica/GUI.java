@@ -1,4 +1,4 @@
-package Gr√°fica;
+package Gr·fica;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -117,8 +117,9 @@ public class GUI {
 	}
 
 	/**
-	 * 
-	 * @return
+	 * This method creates the upper section of the GUI
+	 * It's divided into three JLabels witch receives the files paths of the rules, ham addresses and the spam addresses
+	 * finally creates a button to load the files specified by the user
 	 */
 	private JPanel painelSuperior() {
 		// labels estaticas
@@ -167,8 +168,9 @@ public class GUI {
 	}
 
 	/**
-	 * 
-	 * @return
+	 * This method creates the middle section of the GUI
+	 * It's divided into two panels: the left panel have a table with both the existing rules and their weigh of evaluation
+	 * the right panel it's composed of three buttons: the first generates weighs to be given to the each rule; the second evaluate the number of false-positives(FP) and false-negatives(FN); the third saves the actual configuration that is in use.
 	 */
 
 	private JPanel generatePainelMed() {
@@ -237,7 +239,7 @@ public class GUI {
 	}
 
 	/**
-	 * 
+	 * This method generates the table design for the manual operation.
 	 */
 
 	private JTable genTableManual() {
@@ -247,8 +249,10 @@ public class GUI {
 	}
 
 	/**
-	 * 
-	 * @return
+	 * this method creates the inferior panel witch will be the equals to the  middle panel with the exception of having one less button and the methods in those two buttons being different from the ones in the middle panel.
+	 * In the same way, it's divided into two panels: the left panel and the right panel.
+	 * the left panel also have a table in the same way as the middle panel.
+	 * the right panel only have the random weigh generation but this method instantly calculates the number of FP and FN with the new generated weigh, and the save configuration button.
 	 */
 
 	private JPanel generatePainelInferior() {
@@ -308,8 +312,7 @@ public class GUI {
 	}
 
 	/**
-	 * 
-	 * @return
+	 * this method generates the table used in the automated version
 	 */
 
 	private JTable genTableAuto() {
@@ -319,7 +322,8 @@ public class GUI {
 	}
 
 	/**
-	 * 
+	 * This method is used to read the file containing all the rules in use
+	 * It verifies if the loaded file is a .cf file and, if it is, it 
 	 */
 
 	@SuppressWarnings("static-access")

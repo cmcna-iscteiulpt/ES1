@@ -8,7 +8,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import Gr√°fica.GUI;
+import Gr·fica.GUI;
 
 
 public class FileManager {
